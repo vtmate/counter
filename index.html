@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter</title>
+    <style>
+
+        *{
+            margin: 0;
+            font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+
+        body{
+            background-color: rgb(18, 61, 107);
+            text-align: center;
+        }
+
+        #p{
+            font-size: 10rem;
+            margin-top: 10rem;
+            color:rgb(179, 206, 230);
+        }
+        
+        .button-div{
+            position: relative;
+            display: inline-block;
+        }
+        
+        .button-div:hover .plus{
+            display: inline-block;
+            z-index: 3;
+            /* color:rgb(179, 206, 230); */
+        }
+        
+        .plus{
+            font-size: 1.4rem;
+            transition: 0.2s ease-in-out;
+            color: transparent;
+            position: absolute;
+            padding-top: 1rem;
+        }
+
+        .a{
+            top: -1.5rem;
+            left: -1rem;
+        }
+
+        .b{
+            top: 3.5rem;
+            left: 3rem;
+        }
+
+        .c{
+            top: 0;
+            left: 15rem;
+        }
+
+        .d{
+            top: -2rem;
+            left: 10rem;
+        }
+
+        .e{
+            top: 3.3rem;
+            left: 8rem;
+        }
+
+        button{
+            background-color: rgb(194, 160, 37);
+            border: 0;
+            font-size: 4rem;
+            color:rgb(18, 61, 107);
+        }
+
+        button:hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <p id="p"></p>
+
+    <div class="button-div">
+        <p class="plus a">+1</p>
+        <p class="plus b">+1</p>
+        <p class="plus c">+1</p>
+        <p class="plus d">+1</p>
+        <p class="plus e">+1</p>
+        <button onclick="inc()">Increase</button>
+    </div>
+
+    <script>
+        const p = document.getElementById('p');
+
+        //retrieving the current counter when the page is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+
+            fetch('http://localhost:5000/retrieveData')
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                p.innerText = data;
+            })
+                .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        async function inc() {
+            try {
+
+                //retrieving the counter
+                const retrieveResponse = await fetch('http://localhost:5000/retrieveData');
+
+                if (retrieveResponse.ok) {
+                    // console.log("resp body: " + await retrieveResponse.text());
+                    try {
+                        const counter = await retrieveResponse.json();
+                        console.log('Updated data:', counter);
+                        p.innerText = counter + 1;
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                    }
+                } else {
+                    console.error('Error retrieving data.');
+                }
+            } catch (error) {
+                console.error('Errorrrrr:', error);
+            }
+
+            //incrementing the counter by one
+            const response = await fetch('http://localhost:5000/increment', {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                console.error('Error updating data.');
+                return;
+            }
+        }
+        </script>
+</body>
+</html>
